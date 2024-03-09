@@ -33,9 +33,6 @@ bool isTargetCell(int row, int col, Cell *target)
 {
     return (row == target->row && col == target->col);
 }
-
-// Function to reconstruct the path from the start cell to the target cell
-
 vector<Cell *> reconstructPath(Cell *current)
 { // 重构解路径
     vector<Cell *> path;
@@ -51,56 +48,35 @@ vector<Cell *> reconstructPath(Cell *current)
 // A* algorithm to find the shortest path from start to target
 vector<Cell *> aStar(char grid[200][200], Cell *start, Cell *target)
 {
-    // Define the possible movements (up, down, left, right)
     int dr[] = {-1, 1, 0, 0};
     int dc[] = {0, 0, -1, 1};
-
-    // Create a priority queue (min heap) to store the open cells
-    priority_queue<Cell *, vector<Cell *>, function<bool(Cell *, Cell *)>> open([](Cell *a, Cell *b)
-                                                                                { return a->f > b->f; });
-
-    // Create a 2D vector to store the visited status of each cell
+    priority_queue<Cell *, vector<Cell *>, function<bool(Cell *, Cell *)>> open([](Cell *a, Cell *b){ return a->f > b->f; });
     bool visited[200][200] = {false};
-
-    // Initialize the start cell
     start->calculateHeuristic(target);
     start->f = start->g + start->h;
     open.push(start);
-
     // A* algorithm
     while (!open.empty())
     {
-        // Get the cell with the lowest f value from the open list
         Cell *current = open.top();
         open.pop();
-
-        // Check if the current cell is the target cell
         if (isTargetCell(current->row, current->col, target))
         {
             return reconstructPath(current);
         }
-
-        // Mark the current cell as visited
         visited[current->row][current->col] = true;
 
-        // Explore the neighbors of the current cell
         for (int i = 0; i < 4; i++)
         {
             int newRow = current->row + dr[i];
-            int newCol = current->col + dc[i];
-
-            // Check if the neighbor cell is valid and not visited
-            if (isValidCell(newRow, newCol, grid) && !visited[newRow][newCol])
-            {
-                // Create a new cell for the neighbor
+            int newCol = current->col + dc[i];                
+            if (isValidCell(newRow, newCol, grid) && !visited[newRow][newCol]){     
                 Cell *neighbor = new Cell(newRow, newCol);
                 neighbor->parent = current;
-
                 // Calculate the g and h values for the neighbor
                 neighbor->g = current->g + 1;
                 neighbor->calculateHeuristic(target);
                 neighbor->f = neighbor->g + neighbor->h;
-
                 // Add the neighbor to the open list
                 open.push(neighbor);
             }

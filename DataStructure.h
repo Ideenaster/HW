@@ -1,6 +1,8 @@
 #ifndef DATASTRUCTURE_H
 #define DATASTRUCTURE_H
 
+#include<vector>
+
 const int n = 200;       // 地图大小
 const int robot_num = 10;// 机器人数量
 const int berth_num = 10;// 泊位数量
@@ -10,7 +12,7 @@ struct Robot
 {
     int x, y, goods;
     int status;
-    int mbx, mby;
+    int Tx, Ty;//目标坐标
     Robot() {}
     Robot(int startX, int startY) {
         x = startX;
@@ -50,7 +52,4 @@ char Map[N][N];
 ‘B’ ： 大小为 4*4，表示泊位的位置,泊位标号在后泊位处初始化。
 */
 int gds[N][N];
-
-
-
 #endif // DATASTRUCTURE_H
