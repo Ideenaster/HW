@@ -1,7 +1,9 @@
 #include<vector>
 #include<stack>
 #include<queue>
-#include "A_star.cpp"
+#include <string>
+#include <iostream>
+#include <cstring>
 //typedef std::stack<int> Commandstack;
 
 //临时定义
@@ -34,10 +36,10 @@ struct Robot
     /*
     将寻路算法返回的路径Vector转换Move指令队列，只存Move指令的方向
     */
-    void Robot::Point2Move(Path& Path)//调用例： robot[Path_x.id].Point2Move(Path_x)
+    void Point2Move(Path& Path)//调用例： robot[Path_x.id].Point2Move(Path_x)
     {
-        vector<Point*>& path = Path.path;
-        for(int i = 1; i < path.size() - 1; i++)//path[0]的Point* 为起点
+        std::vector<Point*>& path = Path.path;
+        for(unsigned i = 1; i < path.size() - 1; i++)//path[0]的Point* 为起点
         {
             if(path[i]->x == path[i-1]->x)
             {
@@ -67,7 +69,7 @@ struct Robot
     /*
     响应指令机发出的指令，弹出一个Move指令方向
     */
-    int Robot::MovePop(){
+    int MovePop(){
         if(MoveQueue.empty())
         {
             return -1;
@@ -76,14 +78,81 @@ struct Robot
         MoveQueue.pop();
         return temp;
     }
+    /*
+    下一步指令导致x变化的坐标
+    */
+    int xmove(){
+        if(MoveQueue.empty())
+        {
+            return 2;//单步变化不会导致x变化2
+        }
+        int temp = MoveQueue.front();
+        if(temp == 0 || temp == 1)
+        {
+            return 0;
+        }
+        else if(temp == 2)
+        {
+            return -1;
+        }
+        else
+        {
+            return 1;
+        }
+    }
+    int ymove(){
+        if(MoveQueue.empty())
+        {
+            return 2;//单步变化不会导致y变化2
+        }
+        int temp = MoveQueue.front();
+        if(temp == 2 || temp == 3)
+        {
+            return 0;
+        }
+        else if(temp == 0)
+        {
+            return 1;
+        }
+        else
+        {
+            return -1;
+        }
+    }
 };
 
-struct Commander{
-    int worldline;
+
+
+
+
+struct Commander {
+    std::string CommandSet;
+    const char* CommandName[5] = {"move", "get", "pull", "ship", "go"};
+
+    void PushCommand(int CommandType, int Param1, int Param2 = -1) {
+        char command[20];
+        if(Param2 == -1)
+        {
+            std::snprintf(command, sizeof(command), "%s %d\n", CommandName[CommandType], Param1);
+        }
+        else
+        {
+            std::snprintf(command, sizeof(command), "%s %d %d\n", CommandName[CommandType], Param1, Param2);
+        }
+        CommandSet += command;
+    }
+    /*
+    此函数一次性输出所有CommandSet中的指令，并清空CommandSet
+    */
+    void PopCommand() {
+        // 输出CommandSet中的指令
+        std::printf("%sOK", CommandSet.c_str());
+        // 强制刷新输出缓冲区
+        std::fflush(stdout);
+        // 清空CommandSet
+        CommandSet.clear();
+    }
 };
-
-
-
 
 // 记录机器人的当前位置和所有的未来位置
 // typedef std::queue<Point*> Fateline;
@@ -106,3 +175,14 @@ struct Commander{
 //         }
 //     }
 // };
+
+//测试用main函数
+int main(){
+    //测试Commander
+    Commander cmd;
+    cmd.PushCommand(0,1,2);
+    cmd.PushCommand(1,3);
+    cmd.PushCommand(2,4);
+    cmd.PushCommand(3,5,8);
+    cmd.PopCommand();
+}
