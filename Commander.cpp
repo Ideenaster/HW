@@ -181,6 +181,7 @@ int main(){
     //测试Commander
     Commander cmd;
     cmd.PushCommand(0,1,2);
+    cmd.PushCommand(0,2,3);
     cmd.PushCommand(1,3);
     cmd.PushCommand(2,4);
     cmd.PushCommand(3,5,8);

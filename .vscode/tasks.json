@@ -1,7 +1,7 @@
 {
   "options": {
     "env": {
-      "Path": "C:\\Program Files\\mingw64\\bin;${env:Path}"
+      "Path": "D:\\sxr\\Downloads\\x86_64-8.1.0-release-win32-seh-rt_v6-rev0\\mingw64\\bin;${env:Path}"
     }
   },
   "tasks": [
@@ -11,13 +11,9 @@
         "${file}",
         "-o",
         "${fileDirname}\\${fileBasenameNoExtension}.exe",
-        "-std=c++17",
-        "-Wall",
-        "-static-libgcc",
-        "-static-libstdc++",
-        "-fexec-charset=GBK"
+        "-std=c++11"
       ],
-      "command": "C:\\Program Files\\mingw64\\bin\\g++.exe",
+      "command": "D:\\sxr\\Downloads\\x86_64-8.1.0-release-win32-seh-rt_v6-rev0\\mingw64\\bin\\g++.exe",
       "group": {
         "isDefault": true,
         "kind": "build"
@@ -41,7 +37,7 @@
       "label": "run and pause",
       "options": {
         "env": {
-          "Path": "C:\\Program Files\\mingw64\\bin;${env:Path}"
+          "Path": "D:\\sxr\\Downloads\\x86_64-8.1.0-release-win32-seh-rt_v6-rev0\\mingw64\\bin;${env:Path}"
         }
       },
       "presentation": {
