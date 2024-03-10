@@ -4,8 +4,7 @@
 #include <string>
 #include <iostream>
 #include <cstring>
-//typedef std::stack<int> Commandstack;
-
+#include <unordered_set>
 //临时定义
 struct Point{
     int x, y;
@@ -16,16 +15,16 @@ struct Point{
 struct Path{  
     std::vector<Point*> path;
     int id;
-};
+};                                     //要求格式
 
 struct Robot
 {
     int x, y;
-    bool goods;           //True:有货 False:无货
+    int goods;            //goods改为机器人携带货物的价值
     int status;           //0:空闲 1:寻路 2:碰撞后恢复
     int Tx, Ty;           //目标坐标
-    //是否响应了上一次的指令
-    bool isResponded;     //True:响应了 False:未响应
+    int current_target_x;   //当前目标点x坐标
+    int current_target_y;   //当前目标点y坐标
     std::queue<int> MoveQueue;
     Robot() {}
     Robot(int startX, int startY) {
@@ -84,7 +83,7 @@ struct Robot
     int xmove(){
         if(MoveQueue.empty())
         {
-            return 2;//单步变化不会导致x变化2
+            return 0;
         }
         int temp = MoveQueue.front();
         if(temp == 0 || temp == 1)
@@ -100,10 +99,13 @@ struct Robot
             return 1;
         }
     }
+    /*
+    下一步指令导致y变化的坐标
+    */
     int ymove(){
         if(MoveQueue.empty())
         {
-            return 2;//单步变化不会导致y变化2
+            return 0;
         }
         int temp = MoveQueue.front();
         if(temp == 2 || temp == 3)
@@ -119,7 +121,36 @@ struct Robot
             return -1;
         }
     }
-};
+    int Move2x(int move){
+        if(move == 0 || move == 1)
+        {
+            return 0;
+        }
+        else if(move == 2)
+        {
+            return -1;
+        }
+        else
+        {
+            return 1;
+        }
+    }
+    int Move2y(int move){
+        if(move == 2 || move == 3)
+        {
+            return 0;
+        }
+        else if(move == 0)
+        {
+            return 1;
+        }
+        else
+        {
+            return -1;
+        }
+    
+    }
+}Robot[10];//暂且在这儿放一个全局变量
 
 
 
@@ -154,35 +185,27 @@ struct Commander {
     }
 };
 
-// 记录机器人的当前位置和所有的未来位置
-// typedef std::queue<Point*> Fateline;
+// 记录机器人的当前位置和未来5步的位置
+// typedef std::vector<Point*> Fateline;
 // struct Fate{
 //     Fateline Library[10];
-//     void Fate::NewLine(Path& Path){
-//         //将Path中的Point*加入到Library中
-//         for(int i = 0; i < Path.path.size(); i++)
-//         {
-//             Library[Path.id].push(Path.path[i]);
-//         }
+//     void Fate::NewLine(Path& Path,int id){
+        
 //     }
-//     bool Fate::Check(){//检测未来一帧的位置是否有机器人出现重合，即碰撞
-//         int to_be_visited[200][200];
-//         for(int i = 0; i<10;i++){
-//             if(Library[i].empty())
-//             {
-//                 continue;
-//             }
+//     std::vector<int> Fate::Check(){//检测未来五帧内是否有机器人发生碰撞
+       
 //         }
+
 //     }
 // };
 
-//测试用main函数
-int main(){
-    //测试Commander
-    Commander cmd;
-    cmd.PushCommand(0,1,2);
-    cmd.PushCommand(1,3);
-    cmd.PushCommand(2,4);
-    cmd.PushCommand(3,5,8);
-    cmd.PopCommand();
-}
+// //测试用main函数
+// int main(){
+//     //测试Commander
+//     Commander cmd;
+//     cmd.PushCommand(0,1,2);
+//     cmd.PushCommand(1,3);
+//     cmd.PushCommand(2,4);
+//     cmd.PushCommand(3,5,8);
+//     cmd.PopCommand();
+// }
