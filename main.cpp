@@ -48,6 +48,7 @@ int main()
     while(true){
         int frameid = Input();//读入完成
         cur_frame.frame_id = frameid;
+
        for(int i = 0; i<10; i++){
             if(robot[i].MoveQueue.empty()){//判定当前机器人需要寻路
                 Point* start = new Point(robot[i].x,robot[i].y);
@@ -67,6 +68,9 @@ int main()
         }
         //下面开始泊位指令
         boat_to_berth();
+        //TODO::get
+        
+        //TODO::pull
         Cmd.PopCommand();
 
     }
