@@ -66,11 +66,10 @@ int main()
                 Cmd.PushCommand(0,i,robot[i].MovePop());
             }//机器人的Move写入完毕
         }
+        //TODO::get
+        //TODO::pull
         //下面开始泊位指令
         boat_to_berth();
-        //TODO::get
-        
-        //TODO::pull
         Cmd.PopCommand();
 
     }

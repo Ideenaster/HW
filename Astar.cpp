@@ -2,6 +2,7 @@
 #define ASATR_CPP
 
 #include "DataStructure.h"    //引用全局数据结构头文件
+#include <cstring>
 extern char Map[200][200];    //引用全局地图数组
 extern Robot robot[robot_num];//引用全局机器人数组
 
@@ -46,7 +47,8 @@ Path aStar(Point *start, Point *target, int robotid)
     int dc[] = {0, 0, -1, 1};
     std::priority_queue<Point *, std::vector<Point *>, std::function<bool(Point *, Point *)>> open([](Point *a, Point *b)
                                                                                 { return a->f > b->f; });
-    bool visited[200][200] = {false};
+    bool visited[200][200];
+    std::memset(visited,false,sizeof(visited));
     start->calculateHeuristic(target);
     start->f = start->g + start->h;
     open.push(start);

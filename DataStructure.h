@@ -294,6 +294,7 @@ struct RobotAvoidance
             }
         }
         //之所以这里要这么迂回的处理是因为希望不考虑低优先级的机器人，给高优先一点权力选择
+        return true;
     }
     //根据当前的冲突解决进程返回一个机器人的移动命令
     int GetMove(int idx){
@@ -307,6 +308,7 @@ struct RobotAvoidance
         }
         //此处留下可能的机器人没有选择的接口
         //TODO::机器人没有选择，做额外的处理
+        return 0;
     }
     // 根据冲突优先级重写冲突对象的MoveQueue
     // conflict[0]不在冲突之中
