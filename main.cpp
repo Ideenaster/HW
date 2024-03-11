@@ -1,6 +1,7 @@
-#include <bits/stdc++.h>
 #include "DataStructure.h"
-using namespace std;
+#include "Astar.cpp"
+#include "BOAT_TO_BARTH.cpp"
+#include "test_select.cpp"
 void Init()
 {
     for(int i = 1; i <= n; i ++)
@@ -11,7 +12,7 @@ void Init()
         scanf("%d", &id);
         scanf("%d%d%d%d", &berth[id].x, &berth[id].y, &berth[id].transport_time, &berth[id].loading_speed);
     }
-    scanf("%d", &boat_capacity);
+    scanf("%d", &capacity);
     char okk[5];
     scanf("%s", okk);
     printf("OK\n");
@@ -27,6 +28,7 @@ int Input()
     {
         int x, y, val;
         scanf("%d%d%d", &x, &y, &val);  //各货物的坐标和价值
+        cur_frame.hws.push_back(hw(x,y,val,id));
     }
     for(int i = 0; i < robot_num; i ++)
     {
@@ -43,12 +45,30 @@ int Input()
 int main()
 {
     Init();
-    for(int zhen = 1; zhen <= 15000; zhen ++)
-    {
-        int id = Input();
+    while(true){
+        int frameid = Input();//读入完成
+        cur_frame.frame_id = frameid;
+       for(int i = 0; i<10; i++){
+            if(robot[i].MoveQueue.empty()){//判定当前机器人需要寻路
+                Point* start = new Point(robot[i].x,robot[i].y);
+                Point* target = new Point(robot[i].Tx,robot[i].Ty);
+                auto NewPath = aStar(start,target,i);
+                robot[NewPath.id].Point2Move(NewPath);
+            }
+       }
+        avoid.check_conflict();
+        if(!avoid.conflict.empty()){
+            avoid.rewriteMoveQueue();
+        }
+        for(int i = 0; i<10;i++){
+            if(!robot[i].MoveQueue.empty()){
+                Cmd.PushCommand(0,i,robot[i].MovePop());
+            }//机器人的Move写入完毕
+        }
+        //下面开始泊位指令
+        boat_to_berth();
+        Cmd.PopCommand();
 
-        puts("OK");
-        fflush(stdout);
     }
 
     return 0;
