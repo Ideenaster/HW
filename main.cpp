@@ -2,7 +2,7 @@
 #include "Astar.cpp"
 #include "BOAT_TO_BARTH.cpp"
 #include "Robots_choose.cpp"
-
+#pragma GCC optimize(3,"Ofast","inline")
 void Init()
 {
     for(int i = 0; i < 200; i ++)
@@ -55,6 +55,8 @@ int Input()
 
 int main()
 {
+    //调试选项
+    //freopen("./DBG/DBG.txt","r",stdin);
     Init();
     pre_berth(berth);
     while(true){

@@ -79,7 +79,6 @@ void go_work(int id)
     // printf("to_get: %d\n",to_get.size());
     if (!to_get.empty()){
         hw &target = find_hw(id, to_get, cur_frame);
-        printf("x:%d y:%d\n",target.x,target.y);
         remove_hw(target); 
         robot[id].target_hw = &target;  //赋值robot类的属性
         robot[id].Tx = target.x;

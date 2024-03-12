@@ -243,8 +243,14 @@ struct RobotAvoidance
         {
             for (int j = i + 1; j < 10; j++)
             {
-                if (robot[i].x + robot[i].xmove() == robot[j].x + robot[j].xmove() && robot[i].y + robot[i].ymove() == robot[j].y + robot[j].ymove()) // 注意此处使用全局的Robot
+                if(robot[i].x + robot[i].xmove()&& robot[i].y + robot[i].ymove() == robot[j].y)
                 {
+                    //检测互换式碰撞
+                    conflict.push_back(i);
+                    conflict.push_back(j);
+                }
+                if (robot[i].x + robot[i].xmove() == robot[j].x + robot[j].xmove() && robot[i].y + robot[i].ymove() == robot[j].y + robot[j].ymove()) // 注意此处使用全局的Robot
+                {//检测占1位式碰撞
                     conflict.push_back(i);
                     conflict.push_back(j);
                 }
@@ -301,10 +307,10 @@ struct RobotAvoidance
     int GetMove(int idx){
         //此时旧的MoveQueue应该还没删，去除那个方向的试探
         int move = robot[idx].MoveQueue.front();
-        for(int i = 0;i<4;i++){
+        for(int i = 0;i<4;i++){//枚举三个方向
             if(i == move) continue;
             if(isMoveOK(i,idx)){
-                return i;
+                return i;//i就是方向
             }
         }
         //此处留下可能的机器人没有选择的接口
@@ -323,7 +329,7 @@ struct RobotAvoidance
             // 如果冲突机器人的MoveQueue为空，则不需要重写
             if (robot[i].MoveQueue.empty())
             {
-                continue;
+                continue;//TODO::为什么为空
             }
             // 如果冲突机器人的MoveQueue不为空，则需要重写
             else
