@@ -6,41 +6,42 @@
 #include "DataStructure.h"
 #include "pre_berth.cpp"
 using namespace std;
-//计算一个巴氏距离
+//计算一个曼哈顿距离
 int getdist(int x1, int y1, int x2, int y2)
 {
     return abs(x1 - x2) + abs(y1 - y2);
 }
 //返回机器人和货物之间的距离1
-int calculate_dist(Robot &rot, hw &hw)
+int calculate_dist(int id, hw &hw)
 {
-    return getdist(rot.x, rot.y, hw.x, hw.y);
+    return getdist(robot[id].x, robot[id].y, hw.x, hw.y);
 }
 //返回货物的价值
-int calculate_value(Robot &rot, hw &hw)
+int calculate_value(hw &hw)
 {
     return hw.value;
 }
 //计算剩余的时间
-int calculate_life_left(Robot &rot, hw &hw, hw_frame &cur_frame)
+int calculate_life_left(hw &hw)
 {
     return hw.life;
 }
 //初步选货物。只考虑距离因素
-vector<hw> robot_hw(Robot &rot, hw_frame &cur_frame)
+vector<hw> robot_hw(int id)
 {
     vector<hw> to_get;
     for (hw &i : cur_frame.hws)
     {
     	//这个距离是估计距离，实际距离会高于该距离
 		//如果距离大于80即不可达，如果大于存货时间不可达 
-        if (calculate_dist(rot, i) < 80 && calculate_life_left(rot, i, cur_frame) > calculate_dist(rot,i))
+        if (calculate_dist(id, i) < 40000 && calculate_life_left(i) > calculate_dist(id,i))
             to_get.push_back(i);
+        // printf("life: %d dist: %d,to_get.size: %d\n",calculate_life_left(rot, i, cur_frame),calculate_dist(rot,i),to_get.size());
     }
     return to_get; //待选集合 考虑距离
 }
 //更新全局变量 cur_frame.hws
-void remove_hw(hw_frame &cur_frame, hw &to_remove)
+void remove_hw(hw &to_remove)
 {
     auto it = find(cur_frame.hws.begin(), cur_frame.hws.end(), to_remove);
     if (it != cur_frame.hws.end())
@@ -49,7 +50,7 @@ void remove_hw(hw_frame &cur_frame, hw &to_remove)
     }
 }
 
-hw &find_hw(Robot &rot, vector<hw> &to_get, hw_frame &cur_frame)
+hw &find_hw(int id, vector<hw> &to_get, hw_frame &cur_frame)
 {
     int max_score = INT_MIN;
     hw *target = nullptr;
@@ -58,7 +59,7 @@ hw &find_hw(Robot &rot, vector<hw> &to_get, hw_frame &cur_frame)
     	//因为距离是估计的,当前参数为0
 		//第二个是货物的价值
 		//第三个是货物剩余时间，先消失的货物先拿 
-        int fx = 0* calculate_dist(rot, hw) + 10 * calculate_value(rot, hw) - 2 * calculate_life_left(rot, hw, cur_frame);
+        int fx = 0* calculate_dist(id, hw) + 10 * calculate_value(hw) - 2 * calculate_life_left(hw);
         if (fx > max_score)
         {
             max_score = fx;
@@ -71,26 +72,27 @@ hw &find_hw(Robot &rot, vector<hw> &to_get, hw_frame &cur_frame)
 //如果robot.status==1，用astar找货物
 //如果robot.status==3,先执行get，在执行用astar找泊位，在当前瞬间还需要
 //如果robot.status==5,先制性pull，在执行astar去找货物
-void go_work(Robot robot, hw_frame &cur_frame)
+void go_work(int id)
 {
     //空闲状态就跑去找货物，然后就run astar，找到目标开始work
-    vector<hw> to_get = robot_hw(robot, cur_frame);
+    vector<hw> to_get = robot_hw(id);
+    // printf("to_get: %d\n",to_get.size());
     if (!to_get.empty()){
-        hw &target = find_hw(robot, to_get, cur_frame);
-
-        remove_hw(cur_frame, target); 
-        robot.target_hw = &target;  //赋值robot类的属性
-        robot.Tx = target.x;
-        robot.Ty = target.y;    //0:空闲  1:寻货物路中 2:寻货物完毕1
+        hw &target = find_hw(id, to_get, cur_frame);
+        printf("x:%d y:%d\n",target.x,target.y);
+        remove_hw(target); 
+        robot[id].target_hw = &target;  //赋值robot类的属性
+        robot[id].Tx = target.x;
+        robot[id].Ty = target.y;    //0:空闲  1:寻货物路中 2:寻货物完毕1
                                 // 3:已经到达货物目标位置
                                 // 4:寻找泊位路中
                                 // 5:到达泊位
                                 //6：寻船舶完毕
-        robot.status=2;//告诉他应该需要用astar
+        robot[id].status=2;//告诉他应该需要用astar
     }
 } 
 
-int find_best_berth(Robot &rot, Berth berth[])
+int find_best_berth(int id)
 {   
     
     int index = -1;
@@ -98,7 +100,7 @@ int find_best_berth(Robot &rot, Berth berth[])
     for (int i = 0; i < 10; ++i)
     {   
        //暂时只有泊位到虚拟点的时间以及当前机器人到泊位的时间 
-       int dist= get_robot_to_berth_dist(berth[i].id,rot.x,rot.y);
+       int dist= get_robot_to_berth_dist(berth[i].id,robot[id].x,robot[id].y);
        int time=berth[i].time;
        int pay=1*dist+1*time;
        if(pay<min_pay) min_pay=pay,index=i;
@@ -114,13 +116,13 @@ int find_best_berth(Robot &rot, Berth berth[])
 }
 // 如果robot.status==3 ,需要执行一次 get指令
 //如果 robot.status==5,需要执行pull指令,执行完之后还要改变状态
-void go_berth(Robot robot, Berth berth[10]){
+void go_berth(int id){
     
-    int target_index = find_best_berth(robot, berth);//匹配最优先船舶中 
+    int target_index = find_best_berth(id);//匹配最优先船舶中 
     Berth *target_berth = &berth[target_index];
-    robot.Tx = target_berth->x;
-    robot.Ty = target_berth->y;
-    robot.status=6;//告诉他应该使用astar寻船舶
+    robot[id].Tx = target_berth->x;
+    robot[id].Ty = target_berth->y;
+    robot[id].status=6;//告诉他应该使用astar寻船舶
    /*  target_berth->target_robots.push_back(i);  以该泊位为目标的机器人数组，但是没有清空*/
 }
 /* int count_nearby_robots(Robot &rot, Robot robots[10])
@@ -162,14 +164,14 @@ void go_berth(Robot robot, Berth berth[10]){
 
     return count; // 返回找到的机器人数量
 } */
-void work(Robot robot[10], Berth berth[10], hw_frame cur_frame)
+void work()
 {
-	for(int i=0;i<9;i++){
+	for(int i=0;i<10;i++){
 		if(robot[i].status==0||robot[i].status==5){//空闲或者到达泊位时寻找货物 
-			go_work(robot[i],cur_frame);
+			go_work(i);
 		}
 		else if(robot[i].status==3){//到达货物时寻找船舶 
-			go_berth(robot[i],berth);
+			go_berth(i);
 		}
 	} 
     /*if (robot.Tx<=robot.x&&robot.x<robot.Tx+4&&robot.Ty<=robot.y&&robot.y<robot.Ty+4)

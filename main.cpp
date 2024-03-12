@@ -5,12 +5,13 @@
 
 void Init()
 {
-    for(int i = 1; i <= n; i ++)
-        scanf("%s", Map[i] + 1);        // 读入地图
+    for(int i = 0; i < 200; i ++)
+        scanf("%s", Map[i]);        // 读入地图
     for(int i = 0; i < berth_num; i ++)
     {
         int id;
         scanf("%d", &id);
+        berth[i].id = id;
         scanf("%d%d%d%d", &berth[id].x, &berth[id].y, &berth[id].transport_time, &berth[id].loading_speed);
         berth[id].time=berth[id].transport_time;
         berth[id].num=0;
@@ -59,7 +60,7 @@ int main()
     while(true){
         int frameid = Input();//读入完成
         cur_frame.frame_id = frameid;
-        work(robot,berth,cur_frame);
+        work();
         for(int i = 0; i<10; i++){
             if(robot[i].status == 2){//判定当前机器人需要寻路
                 Point* start = new Point(robot[i].x,robot[i].y);

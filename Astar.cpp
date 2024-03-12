@@ -59,16 +59,16 @@ std::vector<Point*> aStar(Point *start, Point *target, int robotid)
         open.pop();
         if (isTargetPoint(current->x, current->y, target))
         {
-            std::vector<Point *> path = reconstructPath(current);
-            if (!path.empty())
-            {
-                std::cout << "Path found:" << std::endl;
-                for (Point *cell : path)
-                {
-                    std::cout << "(" << cell->x << ", " << cell->y << ")" << std::endl;
-                }
-            }
-            return path;
+            return reconstructPath(current);
+            // if (!path.empty())
+            // {
+            //     std::cout << "Path found:" << std::endl;
+            //     for (Point *cell : path)
+            //     {
+            //         std::cout << "(" << cell->x << ", " << cell->y << ")" << std::endl;
+            //     }
+            // }
+            // return path;
         }
         visited[current->x][current->y] = true;
         for (int i = 0; i < 4; i++)

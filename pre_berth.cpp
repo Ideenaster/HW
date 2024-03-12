@@ -1,6 +1,4 @@
 #include "DataStructure.h"
-#include "ctime"
-extern clock_t sta;
 
 unsigned short int berth_dist[10][200][200];
 bool visited[200][200];
@@ -35,5 +33,4 @@ void pre_berth(Berth berth[]){
 	}
 	printf("OK\n");
     fflush(stdout);
-	sta = clock();
 }
