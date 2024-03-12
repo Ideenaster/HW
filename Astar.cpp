@@ -1,18 +1,17 @@
 #ifndef ASATR_CPP
 #define ASATR_CPP
 
-#include "DataStructure.h"    //引用全局数据结构头文件
+#include "DataStructure.h" //引用全局数据结构头文件
 #include <cstring>
-extern char Map[200][200];    //引用全局地图数组
-extern Robot robot[robot_num];//引用全局机器人数组
-
+extern char Map[200][200];     // 引用全局地图数组
+extern Robot robot[robot_num]; // 引用全局机器人数组
 
 /*
  * @brief: 判断该单元格是否可拓展
  */
 bool isValidPoint(int row, int col)
 {
-    return (row >= 0 && row < 200 && col >= 0 && col < 200 && Map[row][col] != '#');
+    return (row >= 0 && row < 200 && col >= 0 && col < 200 && Map[row][col] != '#'&& Map[row][col] !='*');
 }
 
 /*
@@ -46,9 +45,9 @@ Path aStar(Point *start, Point *target, int robotid)
     int dr[] = {-1, 1, 0, 0};
     int dc[] = {0, 0, -1, 1};
     std::priority_queue<Point *, std::vector<Point *>, std::function<bool(Point *, Point *)>> open([](Point *a, Point *b)
-                                                                                { return a->f > b->f; });
+                                                                                                   { return a->f > b->f; });
     bool visited[200][200];
-    std::memset(visited,false,sizeof(visited));
+    std::memset(visited, false, sizeof(visited));
     start->calculateHeuristic(target);
     start->f = start->g + start->h;
     open.push(start);
@@ -60,7 +59,15 @@ Path aStar(Point *start, Point *target, int robotid)
         open.pop();
         if (isTargetPoint(current->x, current->y, target))
         {
-            std::vector<Point*>&&path = reconstructPath(current);
+            std::vector<Point *> path = reconstructPath(current);
+            if (!path.empty())
+            {
+                std::cout << "Path found:" << std::endl;
+                for (Point *cell : path)
+                {
+                    std::cout << "(" << cell->x << ", " << cell->y << ")" << std::endl;
+                }
+            }
             return Path{path, robotid};
         }
         visited[current->x][current->y] = true;
@@ -68,19 +75,20 @@ Path aStar(Point *start, Point *target, int robotid)
         {
             int newx = current->x + dr[i];
             int newy = current->y + dc[i];
-            // 如果新生成的邻居节点n'已经存在于OPEN集合中,我们不应该直接忽略它,而是比较这两条路径到达n'的代价g值,取其中较小的那条路径。
-            Point *neighbor = new Point(newx, newy);
-            neighbor->parent = current;
-            neighbor->g = current->g + 1;
-            neighbor->calculateHeuristic(target);
-            neighbor->f = neighbor->g + neighbor->h;
-            open.push(neighbor);
-            visited[newx][newy] = true;//忽略re-open问题
+            if (isValidPoint(newx, newy) && !visited[newx][newy])
+            {
+                Point *neighbor = new Point(newx, newy);
+                neighbor->parent = current;
+                neighbor->g = current->g + 1;
+                neighbor->calculateHeuristic(target);
+                neighbor->f = neighbor->g + neighbor->h;
+                open.push(neighbor);
+                visited[newx][newy] = true; // 忽略re-open问题
+            }
         }
     }
     // No path found
     return {};
 }
-
 
 #endif // ASATR_CPP

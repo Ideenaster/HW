@@ -1,7 +1,9 @@
 #include "DataStructure.h"
 #include "Astar.cpp"
 #include "BOAT_TO_BARTH.cpp"
-#include "test_select.cpp"
+#include "Robots_choose.cpp"
+#include "ctime"
+
 void Init()
 {
     for(int i = 1; i <= n; i ++)
@@ -15,8 +17,6 @@ void Init()
     scanf("%d", &capacity);
     char okk[5];
     scanf("%s", okk);
-    printf("OK\n");
-    fflush(stdout);
 }
 
 int Input()
@@ -42,11 +42,16 @@ int Input()
     return id;
 }
 
+clock_t sta;
 int main()
 {
+    // clock_t sta;
     Init();
+    pre_berth(berth);
     while(true){
         int frameid = Input();//读入完成
+        // clock_t end = clock();
+        // if(frameid != (end - sta)/CLOCKS_PER_SEC*50)fflush(stdin);
         cur_frame.frame_id = frameid;
 
        for(int i = 0; i<10; i++){
@@ -66,8 +71,28 @@ int main()
                 Cmd.PushCommand(0,i,robot[i].MovePop());
             }//机器人的Move写入完毕
         }
-        //TODO::get
-        //TODO::pull
+        for(int i = 0; i < 10 ;i++){
+            if(robot[i].status == 1){
+                if(robot[i].x+robot[i].xmove() == robot[i].Tx && robot[i].y+robot[i].ymove() == robot[i].Ty){
+                Cmd.PushCommand(1,i);
+                robot[i].status = 3;//表示已到达货物目标位置
+                }
+            }
+            else if(robot[i].status == 4){
+                if(robot[i].x+robot[i].xmove() == robot[i].Tx && robot[i].y+robot[i].ymove() == robot[i].Ty){
+                    Cmd.PushCommand(2,i);
+                    for(int j = 0;j<10;j++){
+                        if(robot[i].Tx == berth[j].x&&robot[i].Ty == berth[j].y){
+                            berth[j].num++;
+                            berth[j].value+=robot[i].goods_val;
+                            berth[j].goods.push(robot[i].goods_val);
+                            break;
+                        }
+                    }
+                    robot[i].status = 5;//表示已到达泊位
+                }
+            }
+        }
         //下面开始泊位指令
         boat_to_berth();
         Cmd.PopCommand();

@@ -90,14 +90,15 @@ struct hw_frame {
 
 struct Robot
 { int x, y;
-    int goods;            //goods表示机器人是否携带货物
-    int status;           //0:空闲  1:寻路中 2:碰撞后恢复  相当于表示已经放下货物或者已经装载完毕货物
-    int Tx, Ty;           //目标坐标
-    int current_target_x;   //当前目标点x坐标
-    int current_target_y;   //当前目标点y坐标
+    int goods = 0;            //goods表示机器人是否携带货物
+    int status = 0;           //0:空闲 1:寻货物路中 2：碰撞后恢复 3：已经到达货物目标位置 4:寻找泊位路中 5:到达泊位
+    int Tx = 0, Ty = 0;           //目标坐标
+    int current_target_x = 0;   //当前目标点x坐标
+    int current_target_y = 0;   //当前目标点y坐标
     std::queue<int> MoveQueue;
     hw* target_hw;
-    int count_robot=0;
+    int count_robot = 0;
+    int goods_val = 0;
     bool flag=0; //找货物中
     Robot() {}
     Robot(int startX, int startY) {
@@ -111,6 +112,7 @@ struct Robot
     void Point2Move(Path& Path)//调用例： robot[Path_x.id].Point2Move(Path_x)
     {
         std::vector<Point*>& path = Path.path;
+        if(path.size()==0)return;
         for(unsigned i = 1; i < path.size() - 1; i++)//path[0]的Point* 为起点
         {
             if(path[i]->x == path[i-1]->x)
@@ -348,10 +350,6 @@ struct RobotAvoidance
 };
 
 //泊位结构体定义区-------------------------------------------------------------------------------------------------------
-struct GOOD{
-	int value;
-};
-
 struct Berth
 {
     int id;
@@ -364,9 +362,7 @@ struct Berth
 	int value;
 	int num;//货物数量 
 	bool is_choose;//为1表示已经被选择过
-    std::vector<int> target_robots; // 存储目标为该泊位的机器人的索引下标
-
-	std::queue<GOOD> goods;//暂时不考虑 
+	std::queue<int> goods;//货物的价值
     Berth(){}
     Berth(int x, int y, int transport_time, int loading_speed) {
         this -> x = x;
@@ -376,10 +372,6 @@ struct Berth
     }
     bool operator==(const Berth& other) const {
         return x == other.x && y == other.y;
-    }
-
-    void reset() {
-        target_robots.clear(); // 清空目标机器人索引下标的向量
     }
 }berth[berth_num];
 

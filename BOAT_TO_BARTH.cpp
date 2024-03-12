@@ -8,12 +8,6 @@ extern Commander Cmd;
 extern int capacity;
 using namespace std;
 
-/*
-此文件维护注意事项：
-Commander全局变量使用名称Cmd
-包含结构体GOOD，结构体Berth，结构体Boat的定义或拓展定义----此部分将迁至DataStructure.cpp
-
-*/
 //船在泊位之间的转移时间是500帧 
  
 int berth_w[10]={1,-100,-1}; 
@@ -63,9 +57,9 @@ inline void boat_to_berth(){
 					idx--;
 					auto good=berth[pos0].goods.front();//从货物队列中取出货物
 					berth[pos0].goods.pop(); 
-					berth[pos0].value-=good.value; 
+					berth[pos0].value-=good; 
 					berth[pos0].num--;
-					boat[i].value+=good.value;
+					boat[i].value+=good;
 					boat[i].num++;//取货物 
 				}
 			}
@@ -139,9 +133,9 @@ inline void boat_to_berth(){
 					idx--;
 					auto good=berth[pos0].goods.front();//从货物队列中取出货物
 					berth[pos0].goods.pop(); 
-					berth[pos0].value-=good.value; 
+					berth[pos0].value-=good; 
 					berth[pos0].num--;
-					boat[i].value+=good.value;
+					boat[i].value+=good;
 					boat[i].num++;//取货物 
 				}
 			}
