@@ -2,7 +2,6 @@
 #include "Astar.cpp"
 #include "BOAT_TO_BARTH.cpp"
 #include "Robots_choose.cpp"
-#include "ctime"
 
 void Init()
 {
@@ -13,6 +12,15 @@ void Init()
         int id;
         scanf("%d", &id);
         scanf("%d%d%d%d", &berth[id].x, &berth[id].y, &berth[id].transport_time, &berth[id].loading_speed);
+        berth[id].time=berth[id].transport_time;
+        berth[id].num=0;
+        berth[id].value=0;
+        berth[id].is_choose=false;
+    }
+    for(int i=0;i<5;i++){
+        boat[i].num=0;
+        boat[i].value=0;
+        boat[i].location=-1;//在虚拟点
     }
     scanf("%d", &capacity);
     char okk[5];
@@ -35,33 +43,39 @@ int Input()
         int sts;                        //goods为机器人当前是否携带货物，x和y为机器人当前位置
         scanf("%d%d%d%d", &robot[i].goods, &robot[i].x, &robot[i].y, &sts);
     }                                   //sts为当前机器人状态，0为恢复状态（发生碰撞），1为正常状态
-    for(int i = 0; i < 5; i ++)
+    for(int i = 0; i < 5; i ++){
         scanf("%d%d\n", &boat[i].status, &boat[i].pos);
+        if(boat[i].status==0) boat[i].location=-2;
+    }
     char okk[5];                        //输入运货船的各项状态
     scanf("%s", okk);
     return id;
 }
 
-clock_t sta;
 int main()
 {
-    // clock_t sta;
     Init();
     pre_berth(berth);
     while(true){
         int frameid = Input();//读入完成
-        // clock_t end = clock();
-        // if(frameid != (end - sta)/CLOCKS_PER_SEC*50)fflush(stdin);
         cur_frame.frame_id = frameid;
         work(robot,berth,cur_frame);
-       for(int i = 0; i<10; i++){
-            if(robot[i].status == 23){//判定当前机器人需要寻路
+        for(int i = 0; i<10; i++){
+            if(robot[i].status == 2){//判定当前机器人需要寻路
                 Point* start = new Point(robot[i].x,robot[i].y);
                 Point* target = new Point(robot[i].Tx,robot[i].Ty);
                 auto NewPath = aStar(start,target,i);
-                robot[NewPath.id].Point2Move(NewPath);
+                robot[i].Point2Move(NewPath);
+                robot[i].status=1;//寻找完毕，正在货物路上
             }
-       }
+            else if(robot[i].status==6){
+                Point* start = new Point(robot[i].x,robot[i].y);
+                Point* target = new Point(robot[i].Tx,robot[i].Ty);
+                auto NewPath = aStar(start,target,i);
+                robot[i].Point2Move(NewPath);
+                robot[i].status=5;//寻找完毕，正在船舶路上
+            }
+        }
         avoid.check_conflict();
         if(!avoid.conflict.empty()){
             avoid.rewriteMoveQueue();

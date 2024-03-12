@@ -68,7 +68,7 @@ hw &find_hw(Robot &rot, vector<hw> &to_get, hw_frame &cur_frame)
     //得到当前分数最高的货物 
     return *target;
 }
-//如果robot.status==0，用astar找货物
+//如果robot.status==1，用astar找货物
 //如果robot.status==3,先执行get，在执行用astar找泊位，在当前瞬间还需要
 //如果robot.status==5,先制性pull，在执行astar去找货物
 void go_work(Robot robot, hw_frame &cur_frame)
@@ -77,14 +77,16 @@ void go_work(Robot robot, hw_frame &cur_frame)
     vector<hw> to_get = robot_hw(robot, cur_frame);
     if (!to_get.empty()){
         hw &target = find_hw(robot, to_get, cur_frame);
+
         remove_hw(cur_frame, target); 
         robot.target_hw = &target;  //赋值robot类的属性
         robot.Tx = target.x;
-        robot.Ty = target.y;    //0:空闲  1:寻货物路中 2:碰撞后恢复 
+        robot.Ty = target.y;    //0:空闲  1:寻货物路中 2:寻货物完毕1
                                 // 3:已经到达货物目标位置
                                 // 4:寻找泊位路中
                                 // 5:到达泊位
-        robot.status=1;//正在寻货物中 
+                                //6：寻船舶完毕
+        robot.status=2;//告诉他应该需要用astar
     }
 } 
 
@@ -118,7 +120,7 @@ void go_berth(Robot robot, Berth berth[10]){
     Berth *target_berth = &berth[target_index];
     robot.Tx = target_berth->x;
     robot.Ty = target_berth->y;
-    robot.status=4;
+    robot.status=6;//告诉他应该使用astar寻船舶
    /*  target_berth->target_robots.push_back(i);  以该泊位为目标的机器人数组，但是没有清空*/
 }
 /* int count_nearby_robots(Robot &rot, Robot robots[10])

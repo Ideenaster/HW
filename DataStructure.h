@@ -24,11 +24,11 @@ struct Robot;
 struct Commander;
 extern Robot robot[10];
 extern char Map[200][200];
-struct Path;
+// struct Path;
 struct Point;
 
 //A_star算法数据结构定义区-----------------------------------------------------------------------------------------------
-Path aStar(Point *start, Point *target, int robotid);
+std::vector<Point* > aStar(Point *start, Point *target, int robotid);
 
 
 /*
@@ -49,10 +49,10 @@ struct Point{
  * @param: path: 存储路径的vector
  * @param: id:   机器人id
  */
-struct Path{  
-    std::vector<Point*> path;
-    int id;
-};
+// struct Path{  
+//     std::vector<Point*> path;
+//     int id;
+// };
 
 //货物结构体定义区-------------------------------------------------------------------------------------------------------
 struct hw {
@@ -109,9 +109,8 @@ struct Robot
     /*
     将寻路算法返回的路径Vector转换Move指令队列，只存Move指令的方向
     */
-    void Point2Move(Path& Path)//调用例： robot[Path_x.id].Point2Move(Path_x)
+    void Point2Move(std::vector<Point*> path)//调用例： robot[Path_x.id].Point2Move(Path_x)
     {
-        std::vector<Point*>& path = Path.path;
         if(path.size()==0)return;
         for(unsigned i = 1; i < path.size() - 1; i++)//path[0]的Point* 为起点
         {
@@ -341,8 +340,8 @@ struct RobotAvoidance
                     //这里激进一点，由于免费A_star，所以这里可以直接用A_star来重新计算路径
                     Point* start = new Point(robot[conflict[i]].x,robot[conflict[i]].y);
                     Point* target = new Point(robot[conflict[i]].Tx,robot[conflict[i]].Ty);
-                    auto NewPath = aStar(start,target,conflict[i]);
-                    robot[NewPath.id].Point2Move(NewPath);
+                    std::vector<Point* > NewPath = aStar(start,target,conflict[i]);
+                    robot[conflict[i]].Point2Move(NewPath);
                 }
             }
         }

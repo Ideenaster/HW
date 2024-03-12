@@ -40,7 +40,7 @@ std::vector<Point *> reconstructPath(Point *current)
 /*
  * @brief: A*算法函数主体
  */
-Path aStar(Point *start, Point *target, int robotid)
+std::vector<Point*> aStar(Point *start, Point *target, int robotid)
 {
     int dr[] = {-1, 1, 0, 0};
     int dc[] = {0, 0, -1, 1};
@@ -68,7 +68,7 @@ Path aStar(Point *start, Point *target, int robotid)
                     std::cout << "(" << cell->x << ", " << cell->y << ")" << std::endl;
                 }
             }
-            return Path{path, robotid};
+            return path;
         }
         visited[current->x][current->y] = true;
         for (int i = 0; i < 4; i++)

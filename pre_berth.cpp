@@ -25,9 +25,9 @@ void pre_berth(Berth berth[]){
 			unsigned short int predist=t.first;
 			int prex=t.second.first,prey=t.second.second;
 			berth_dist[i][prex][prey]=predist;
-			for(int i=0;i<4;i++){
-				int newx=prex+dx[i],newy=prey+dy[i];
-				if(newx<0||newx>=200||newy<0||newy>=200||visited[newx][newy]) continue;
+			for(int j=0;j<4;j++){
+				int newx=prex+dx[j],newy=prey+dy[j];
+				if(newx<0||newx>=200||newy<0||newy>=200||visited[newx][newy]||Map[newx][newy] == '#'||Map[newx][newy] =='*') continue;
 				visited[newx][newy]=true;
 				q.push({predist+1,{newx,newy}});
 			}
