@@ -91,7 +91,7 @@ struct hw_frame {
 struct Robot
 { int x, y;
     int goods = 0;            //goods表示机器人是否携带货物
-    int status = 0;           //0:空闲 1:寻货物路中 2：碰撞后恢复 3：已经到达货物目标位置 4:寻找泊位路中 5:到达泊位
+    int status = 0;           //0:空闲 1:寻货物路中 2：已分配 3：已经到达货物目标位置 4:寻找泊位路中 5:到达泊位
     int Tx = 0, Ty = 0;           //目标坐标
     int current_target_x = 0;   //当前目标点x坐标
     int current_target_y = 0;   //当前目标点y坐标

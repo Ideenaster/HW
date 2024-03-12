@@ -53,9 +53,9 @@ int main()
         // clock_t end = clock();
         // if(frameid != (end - sta)/CLOCKS_PER_SEC*50)fflush(stdin);
         cur_frame.frame_id = frameid;
-
+        work(robot,berth,cur_frame);
        for(int i = 0; i<10; i++){
-            if(robot[i].MoveQueue.empty()){//判定当前机器人需要寻路
+            if(robot[i].status == 23){//判定当前机器人需要寻路
                 Point* start = new Point(robot[i].x,robot[i].y);
                 Point* target = new Point(robot[i].Tx,robot[i].Ty);
                 auto NewPath = aStar(start,target,i);
