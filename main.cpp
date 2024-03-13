@@ -27,7 +27,7 @@ void Init()
     char okk[5];
     scanf("%s", okk);
 }
-
+int sts; 
 int Input()
 {
     scanf("%d%d", &id, &money);         //id为判题器返回的帧编号，money为当前金币数
@@ -41,18 +41,22 @@ int Input()
     }
     for(int i = 0; i < robot_num; i ++)
     {
-        int sts;                        //goods为机器人当前是否携带货物，x和y为机器人当前位置
-        scanf("%d%d%d%d", &robot[i].goods, &robot[i].x, &robot[i].y, &sts);
+                               //goods为机器人当前是否携带货物，x和y为机器人当前位置
+        scanf("%d%d%d%d", &robot[i].goods, &robot[i].x, &robot[i].y, &robot[i].sts);
     }                                   //sts为当前机器人状态，0为恢复状态（发生碰撞），1为正常状态
     for(int i = 0; i < 5; i ++){
         scanf("%d%d\n", &boat[i].status, &boat[i].pos);
         if(boat[i].status==0) boat[i].location=-2;
+        else{
+            boat[i].location=boat[i].pos;
+        }
     }
     char okk[5];                        //输入运货船的各项状态
     scanf("%s", okk);
     return id;
 }
-
+int restirct=1;
+int have_run=0;
 int main()
 {
     //调试选项
@@ -62,8 +66,12 @@ int main()
     while(true){
         int frameid = Input();//读入完成
         cur_frame.frame_id = frameid;
+        for(int i=0;i<2;i++)
+        if(robot[i].sts==0)
+        {robot[i].status=0;
+        while(!robot[i].MoveQueue.empty()) robot[i].MoveQueue.pop();}
         work();
-        for(int i = 0; i < 1; i++){
+        for(int i = 0; i < 2; i++){
             if(robot[i].status == 2){//判定当前机器人需要寻路
                 Point* start = new Point(robot[i].x,robot[i].y);
                 Point* target = new Point(robot[i].Tx,robot[i].Ty);
@@ -91,12 +99,12 @@ int main()
         if(!avoid.conflict.empty()){
             avoid.rewriteMoveQueue();
         }
-        for(int i = 0; i < 1;i++){
+        for(int i = 0; i < 2;i++){
             if(!robot[i].MoveQueue.empty()){
                 Cmd.PushCommand(0,i,robot[i].MovePop());
             }//机器人的Move写入完毕
         }
-        for(int i = 0; i < 1 ;i++){
+        for(int i = 0; i < 2 ;i++){
             if(robot[i].status == 1){
                 if(robot[i].x+robot[i].xmove() == robot[i].Tx && robot[i].y+robot[i].ymove() == robot[i].Ty){
                 Cmd.PushCommand(1,i);

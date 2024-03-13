@@ -80,7 +80,7 @@ struct hw_frame {
     std::vector<hw> hws;         // 当前帧所有的货物
     void init()
     {
-        for(hw hw:hws){
+        for(hw &hw:hws){
             hw.life=frame_id-hw.birth;
         }
     }
@@ -97,6 +97,7 @@ struct Robot
     int current_target_y = 0;   //当前目标点y坐标
     std::queue<int> MoveQueue;
     hw* target_hw;
+    int sts;
     int count_robot = 0;
     int goods_val = 0;
     bool flag=0; //找货物中
@@ -343,11 +344,13 @@ struct RobotAvoidance
                         robot[conflict[i]].MoveQueue.pop();
                     }
                     robot[conflict[i]].MoveQueue.push(move);
+                    robot[conflict[i]].status=0;
+                    
                     //这里激进一点，由于免费A_star，所以这里可以直接用A_star来重新计算路径
-                    Point* start = new Point(robot[conflict[i]].x+robot[conflict[i]].xmove(),robot[conflict[i]].y+robot[conflict[i]].ymove());
+                   /*  Point* start = new Point(robot[conflict[i]].x+robot[conflict[i]].xmove(),robot[conflict[i]].y+robot[conflict[i]].ymove());
                     Point* target = new Point(robot[conflict[i]].Tx,robot[conflict[i]].Ty);
                     std::vector<Point* > NewPath = aStar(start,target,conflict[i]);
-                    robot[conflict[i]].Point2Move(NewPath);
+                    robot[conflict[i]].Point2Move(NewPath); */
                 }
             }
         }

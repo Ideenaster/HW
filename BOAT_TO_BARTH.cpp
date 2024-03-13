@@ -8,36 +8,37 @@ extern Commander Cmd;
 extern int capacity;
 using namespace std;
 
-//èˆ¹åœ¨æ³Šä½ä¹‹é—´çš„è½¬ç§»æ—¶é—´æ˜¯500å¸§ 
+//´¬ÔÚ²´Î»Ö®¼äµÄ×ªÒÆÊ±¼äÊÇ500Ö¡ 
  
 int berth_w[10]={1,-100,-1}; 
-inline bool berth_cmp(Berth x,Berth y){//f=ä»·å€¼+è´§ç‰©æ•°é‡+æ—¶é—´ 
+bool berth_cmp(Berth x,Berth y){//f=¼ÛÖµ+»õÎïÊıÁ¿+Ê±¼ä 
 	int fx=berth_w[0]*x.value+berth_w[1]*x.num+berth_w[2]*x.time;
 	int fy=berth_w[0]*y.value+berth_w[1]*y.num+berth_w[2]*y.time;
 	if(x.num==0) fx=-2e9;
-	if(y.num==0) fy=-2e9;//å¦‚æœæ•°é‡ä¸º0ï¼Œè®¾ç½®ä¸º-INF 
+	if(y.num==0) fy=-2e9;//Èç¹ûÊıÁ¿Îª0£¬ÉèÖÃÎª-INF 
 	return fx>fy;
 }
  
 const int FAST_BOAT=4;
-const int MAXZHEN=14999;//æœ€åçš„æ—¶é—´ 
-//èˆ¹é€‰æ‹©æ³Šä½ 
-inline void boat_to_berth(){
-	sort(berth,berth+10,berth_cmp);//ä¿®æ”¹äº†æ­¤å¤„çš„berth_cmpå‡½æ•°
-	for(int i=0;i<FAST_BOAT;i++){//å‰é¢FAST_BOATæ¡èˆ¹åªè¦æœ‰è´§ç‰©å°±è¿è¡Œ 
-	    if(boat[i].location==-2) continue;//-2è¡¨ç¤ºå½“å‰èˆ¹ä¸å¯ä½¿ç”¨ 
+const int MAXZHEN=14999;//×îºóµÄÊ±¼ä 
+//´¬Ñ¡Ôñ²´Î» 
+void boat_to_berth(){
+	sort(berth,berth+10,berth_cmp);//ĞŞ¸ÄÁË´Ë´¦µÄberth_cmpº¯Êı
+	for(int i=0;i<FAST_BOAT;i++){//Ç°ÃæFAST_BOATÌõ´¬Ö»ÒªÓĞ»õÎï¾ÍÔËĞĞ 
+	    if(boat[i].location==-2) continue;//-2±íÊ¾µ±Ç°´¬²»¿ÉÊ¹ÓÃ 
 		if(boat[i].location==-1){
 			for(int j=0;j<10;j++){
 				if(!berth[j].is_choose){
+					if(berth[j].num==0) break;
 					berth[j].is_choose=true;
-					Cmd.PushCommand(3,i,berth[j].id);//3æ˜¯shipæŒ‡ä»¤,ç¬¬ä¸€ä¸ªå‚æ•°æ˜¯èˆ¹çš„id,ç¬¬äºŒä¸ªæ˜¯æ³Šä½çš„ï¼Œè¡¨ç¤ºå‘ç€æ³Šä½è¿›è¡Œ 
+					Cmd.PushCommand(3,i,berth[j].id);//3ÊÇshipÖ¸Áî,µÚÒ»¸ö²ÎÊıÊÇ´¬µÄid,µÚ¶ş¸öÊÇ²´Î»µÄ£¬±íÊ¾Ïò×Å²´Î»½øĞĞ 
 					boat[i].location=-2;
 					break;
 				}
 			}                           
 		}
 		else{
-			int pos0=0;//pos0è¡¨ç¤ºå½“å‰èˆ¹åœ¨çš„æ³Šä½çš„idå½“å‰åœ¨æ•°ç»„çš„ä½ç½® 
+			int pos0=0;//pos0±íÊ¾µ±Ç°´¬ÔÚµÄ²´Î»µÄidµ±Ç°ÔÚÊı×éµÄÎ»ÖÃ 
 			for(int j=0;j<10;j++){
 				if(boat[i].location==berth[j].id){
 					pos0=j;
@@ -45,75 +46,87 @@ inline void boat_to_berth(){
 				}
 			}
 			int zhen=cur_frame.frame_id;
-			if(zhen+berth[pos0].time==MAXZHEN){//å½“å‰å¸§æ°å¥½å¯ä»¥è¿”å›è™šæ‹Ÿç‚¹,ç›´æ¥è¿”å› 
+			if(zhen+berth[pos0].time==MAXZHEN){//µ±Ç°Ö¡Ç¡ºÃ¿ÉÒÔ·µ»ØĞéÄâµã,Ö±½Ó·µ»Ø 
 			    berth[pos0].is_choose=false;
-				Cmd.PushCommand(4,i);//4æ˜¯goæŒ‡ä»¤ï¼Œç¬¬ä¸€ä¸ªå‚æ•°æ˜¯èˆ¹çš„idï¼Œè¡¨ç¤ºå›è™šæ‹Ÿç‚¹ 
+				Cmd.PushCommand(4,i);//4ÊÇgoÖ¸Áî£¬µÚÒ»¸ö²ÎÊıÊÇ´¬µÄid£¬±íÊ¾»ØĞéÄâµã 
+				boat[i].location=-2;
 				continue;
 			}
-			//å½“å‰æ³Šä½è¿˜æœ‰è´§ç‰© 
+			//µ±Ç°²´Î»»¹ÓĞ»õÎï 
 			if(berth[pos0].num>0&&boat[i].num<capacity){
-				int idx=berth[pos0].velocity;
+				int idx=berth[pos0].loading_speed;
 				while(berth[pos0].num>0&&idx>0){
 					idx--;
-					auto good=berth[pos0].goods.front();//ä»è´§ç‰©é˜Ÿåˆ—ä¸­å–å‡ºè´§ç‰©
+					auto good=berth[pos0].goods.front();//´Ó»õÎï¶ÓÁĞÖĞÈ¡³ö»õÎï
 					berth[pos0].goods.pop(); 
 					berth[pos0].value-=good; 
 					berth[pos0].num--;
 					boat[i].value+=good;
-					boat[i].num++;//å–è´§ç‰© 
+					boat[i].num++;//È¡»õÎï 
 				}
 			}
-			if(berth[pos0].num!=0){
+			//»õÂú·µ»Ø
+			if(boat[i].num==capacity){
+				Cmd.PushCommand(4,i);//4ÊÇgoÖ¸Áî£¬µÚÒ»¸ö²ÎÊıÊÇ´¬µÄid£¬±íÊ¾»ØĞéÄâµã
+				berth[pos0].is_choose=false;
+				boat[i].location=-2;
+				continue;
+			}
+			if(berth[pos0].num>0){
 				continue;
 			} 
-			//å½“å‰æ³Šä½å·²ç»å–å®Œè´§ç‰© 
-			// int pos1;//pos1è¡¨ç¤ºå½“å‰å¯ç”¨æ³Šä½çš„æœ€å¤§ä»·å€¼çš„ä½ç½®
+			//µ±Ç°²´Î»ÒÑ¾­È¡Íê»õÎï 
+			// int pos1;//pos1±íÊ¾µ±Ç°¿ÉÓÃ²´Î»µÄ×î´ó¼ÛÖµµÄÎ»ÖÃ
 			for(int j=0;j<10;j++){
-				if(berth[j].is_choose){//æ³Šä½å·²ç»è¢«é€‰æ‹© 
+				if(berth[j].is_choose){//²´Î»ÒÑ¾­±»Ñ¡Ôñ 
 					continue;
 				}
-				if(berth[pos0].time+berth[j].time<=500){//ä»å½“å‰æ³Šä½å›è™šæ‹Ÿç‚¹å†åˆ°è¯¥æ³Šä½çš„æ—¶é—´è¿˜è¦çŸ­ 
+				if(berth[pos0].time+berth[j].time<=500){//´Óµ±Ç°²´Î»»ØĞéÄâµãÔÙµ½¸Ã²´Î»µÄÊ±¼ä»¹Òª¶Ì 
 					continue;
 				}
-				if(zhen+500+berth[j].time>MAXZHEN){//TLE;å®é™…è¿˜æœ‰è´§ç‰©æ—¶é—´,è¿™ä¸ªMAXZHENè¦å‡å»ä¸€å®šå€¼ 
+				if(zhen+500+berth[j].time>MAXZHEN){//TLE;Êµ¼Ê»¹ÓĞ»õÎïÊ±¼ä,Õâ¸öMAXZHENÒª¼õÈ¥Ò»¶¨Öµ 
 					continue;
 				} 
-				//å‰©ä½™å®¹é‡ 
+				//Ê£ÓàÈİÁ¿ 
 				int leftcapacity=max(0,capacity-boat[i].num);
-				//å¤§æ¦‚ä¼°è®¡èƒ½å–å¾—çš„ä»·å€¼ 
+				if(berth[j].num==0) continue;
+				//Õâ¸öµØ·½Ò»¶¨²»³öÎª0
+				//´ó¸Å¹À¼ÆÄÜÈ¡µÃµÄ¼ÛÖµ 
 				int othervalue = min(berth[j].value*leftcapacity/berth[j].num,berth[j].value);
-				//è¿™é‡Œçš„å…¬å¼æ˜¯ç”±é™¤æ³•å˜çš„
-				//å¦‚æœå½“å‰èˆ¹çš„ä»·å€¼æ¯”ä¸Šå½“å‰ç‚¹pos0è¿”å›è™šæ‹Ÿç‚¹çš„æ—¶é—´å°äºç­‰äºåˆ°jç‚¹çš„ä»·å€¼æ¯”é¢å¤–æ—¶é—´
-				//é‚£ä¹ˆé€‰æ‹©è¯¥berth 
+				//ÕâÀïµÄ¹«Ê½ÊÇÓÉ³ı·¨±äµÄ
+				//Èç¹ûµ±Ç°´¬µÄ¼ÛÖµ±ÈÉÏµ±Ç°µãpos0·µ»ØĞéÄâµãµÄÊ±¼äĞ¡ÓÚµÈÓÚµ½jµãµÄ¼ÛÖµ±È¶îÍâÊ±¼ä
+				//ÄÇÃ´Ñ¡Ôñ¸Ãberth 
 				if(2*othervalue*berth[pos0].time>=boat[i].value*(500+berth[j].time-berth[pos0].time)){
-					Cmd.PushCommand(3,i,berth[j].id);//3æ˜¯shipæŒ‡ä»¤,ç¬¬ä¸€ä¸ªå‚æ•°æ˜¯èˆ¹çš„id,ç¬¬äºŒä¸ªæ˜¯æ³Šä½çš„ï¼Œè¡¨ç¤ºå‘ç€æ³Šä½è¿›è¡Œ
+					Cmd.PushCommand(3,i,berth[j].id);//3ÊÇshipÖ¸Áî,µÚÒ»¸ö²ÎÊıÊÇ´¬µÄid,µÚ¶ş¸öÊÇ²´Î»µÄ£¬±íÊ¾Ïò×Å²´Î»½øĞĞ
 					berth[j].is_choose=true;
 					berth[pos0].is_choose=false;
+					boat[i].location=-2;
 					break;
-				}
+				} 
 			}
-			//å¦‚æœåˆ°å…¶ä»–ç‚¹ä¸çŸ¥å¾—ï¼Œé‚£ä¹ˆç›´æ¥è¿”å›è™šæ‹Ÿç‚¹ 
+			//Èç¹ûµ½ÆäËûµã²»ÖªµÃ£¬ÄÇÃ´Ö±½Ó·µ»ØĞéÄâµã 
 			if(berth[pos0].is_choose){
-				Cmd.PushCommand(4,i);//4æ˜¯goæŒ‡ä»¤ï¼Œç¬¬ä¸€ä¸ªå‚æ•°æ˜¯èˆ¹çš„idï¼Œè¡¨ç¤ºå›è™šæ‹Ÿç‚¹
+				Cmd.PushCommand(4,i);//4ÊÇgoÖ¸Áî£¬µÚÒ»¸ö²ÎÊıÊÇ´¬µÄid£¬±íÊ¾»ØĞéÄâµã
 				berth[pos0].is_choose=false;
+				boat[i].location=-2;
 			}
 		} 
 	} 
-	//åé¢éƒ½æ˜¯æ…¢èˆ¹,å¦‚æœå‘ç°æ…¢èˆ¹ä¸å€¼çš„è¯å¯ä»¥FAST_BOAT=5å°±å¯ä»¥äº† 
+	//ºóÃæ¶¼ÊÇÂı´¬,Èç¹û·¢ÏÖÂı´¬²»ÖµµÄ»°¿ÉÒÔFAST_BOAT=5¾Í¿ÉÒÔÁË 
 	for(int i=FAST_BOAT;i<=4;i++){
 		if(boat[i].location==-2) continue;
 		if(boat[i].location==-1){
 			for(int j=0;j<10;j++){
-				if(!berth[j].is_choose&&(berth[j].value>=1000||2*berth[j].num>=capacity)){//å½“æ³Šä½ä¸Šçš„ä»·å€¼å¤§äº1000æˆ–è€…è´§ç‰©æ•°é‡å¤§äºç­‰äº1/2()æ—¶ 
+				if(!berth[j].is_choose&&(berth[j].value>=1000||2*berth[j].num>=capacity)){//µ±²´Î»ÉÏµÄ¼ÛÖµ´óÓÚ1000»òÕß»õÎïÊıÁ¿´óÓÚµÈÓÚ1/2()Ê± 
 					berth[j].is_choose=true;
-					Cmd.PushCommand(3,i,berth[j].id);//3æ˜¯shipæŒ‡ä»¤,ç¬¬ä¸€ä¸ªå‚æ•°æ˜¯èˆ¹çš„id,ç¬¬äºŒä¸ªæ˜¯æ³Šä½çš„ï¼Œè¡¨ç¤ºå‘ç€æ³Šä½è¿›è¡Œ 
-					boat[i].location=-2;//è¿™ä¸ªè²Œä¼¼å¤šä½™??? 
+					Cmd.PushCommand(3,i,berth[j].id);//3ÊÇshipÖ¸Áî,µÚÒ»¸ö²ÎÊıÊÇ´¬µÄid,µÚ¶ş¸öÊÇ²´Î»µÄ£¬±íÊ¾Ïò×Å²´Î»½øĞĞ 
+					boat[i].location=-2;//Õâ¸öÃ²ËÆ¶àÓà??? 
 					break;
 				}
 			}                           
 		}
 		else{
-			int pos0=0;//pos0è¡¨ç¤ºå½“å‰èˆ¹åœ¨çš„æ³Šä½çš„idå½“å‰åœ¨æ•°ç»„çš„ä½ç½® 
+			int pos0=0;//pos0±íÊ¾µ±Ç°´¬ÔÚµÄ²´Î»µÄidµ±Ç°ÔÚÊı×éµÄÎ»ÖÃ 
 			for(int j=0;j<10;j++){
 				if(boat[i].location==berth[j].id){
 					pos0=j;
@@ -121,58 +134,69 @@ inline void boat_to_berth(){
 				}
 			}
 			int zhen=cur_frame.frame_id;
-			if(zhen+berth[pos0].time==MAXZHEN){//å½“å‰å¸§æ°å¥½å¯ä»¥è¿”å›è™šæ‹Ÿç‚¹,ç›´æ¥è¿”å› 
+			if(zhen+berth[pos0].time==MAXZHEN){//µ±Ç°Ö¡Ç¡ºÃ¿ÉÒÔ·µ»ØĞéÄâµã,Ö±½Ó·µ»Ø 
 			    berth[pos0].is_choose=false;
-				Cmd.PushCommand(4,i);//4æ˜¯goæŒ‡ä»¤ï¼Œç¬¬ä¸€ä¸ªå‚æ•°æ˜¯èˆ¹çš„idï¼Œè¡¨ç¤ºå›è™šæ‹Ÿç‚¹ 
+				Cmd.PushCommand(4,i);//4ÊÇgoÖ¸Áî£¬µÚÒ»¸ö²ÎÊıÊÇ´¬µÄid£¬±íÊ¾»ØĞéÄâµã 
+				boat[i].location=-2;
 				continue;
 			}
-			//å½“å‰æ³Šä½è¿˜æœ‰è´§ç‰© 
+			//µ±Ç°²´Î»»¹ÓĞ»õÎï 
 			if(berth[pos0].num>0&&boat[i].num<capacity){
-				int idx=berth[pos0].velocity;
+				int idx=berth[pos0].loading_speed;
 				while(berth[pos0].num>0&&idx>0){
 					idx--;
-					auto good=berth[pos0].goods.front();//ä»è´§ç‰©é˜Ÿåˆ—ä¸­å–å‡ºè´§ç‰©
+					auto good=berth[pos0].goods.front();//´Ó»õÎï¶ÓÁĞÖĞÈ¡³ö»õÎï
 					berth[pos0].goods.pop(); 
 					berth[pos0].value-=good; 
 					berth[pos0].num--;
 					boat[i].value+=good;
-					boat[i].num++;//å–è´§ç‰© 
+					boat[i].num++;//È¡»õÎï 
 				}
+			}
+			if(boat[i].num==capacity){
+				Cmd.PushCommand(4,i);//4ÊÇgoÖ¸Áî£¬µÚÒ»¸ö²ÎÊıÊÇ´¬µÄid£¬±íÊ¾»ØĞéÄâµã
+				berth[pos0].is_choose=false;
+				boat[i].location=-2;
+				continue;
 			}
 			if(berth[pos0].num!=0){
 				continue;
 			} 
-			//å½“å‰æ³Šä½æ²¡æœ‰è´§ç‰©äº† 
-			// int pos1;//pos1è¡¨ç¤ºå½“å‰å¯ç”¨æ³Šä½çš„æœ€å¤§ä»·å€¼çš„ä½ç½®
+			//µ±Ç°²´Î»Ã»ÓĞ»õÎïÁË 
+			// int pos1;//pos1±íÊ¾µ±Ç°¿ÉÓÃ²´Î»µÄ×î´ó¼ÛÖµµÄÎ»ÖÃ
 			for(int j=0;j<10;j++){
-				if(berth[j].is_choose){//æ³Šä½å·²ç»è¢«é€‰æ‹© 
+				if(berth[j].is_choose){//²´Î»ÒÑ¾­±»Ñ¡Ôñ 
 					continue;
 				}
-				if(berth[pos0].time+berth[j].time<=500){//ä»å½“å‰æ³Šä½å›è™šæ‹Ÿç‚¹å†åˆ°è¯¥æ³Šä½çš„æ—¶é—´è¿˜è¦çŸ­ 
+				if(berth[pos0].time+berth[j].time<=500){//´Óµ±Ç°²´Î»»ØĞéÄâµãÔÙµ½¸Ã²´Î»µÄÊ±¼ä»¹Òª¶Ì 
 					continue;
 				}
-				if(zhen+500+berth[j].time>MAXZHEN){//TLE;å®é™…è¿˜æœ‰è´§ç‰©æ—¶é—´,è¿™ä¸ªMAXZHENè¦å‡å»ä¸€å®šå€¼ 
+				if(zhen+500+berth[j].time>MAXZHEN){//TLE;Êµ¼Ê»¹ÓĞ»õÎïÊ±¼ä,Õâ¸öMAXZHENÒª¼õÈ¥Ò»¶¨Öµ 
 					continue;
 				} 
-				//å‰©ä½™å®¹é‡ 
+				//Ê£ÓàÈİÁ¿ 
 				int leftcapacity=max(0,capacity-boat[i].num);
-				//å¤§æ¦‚ä¼°è®¡èƒ½å–å¾—çš„ä»·å€¼ 
+				//´ó¸Å¹À¼ÆÄÜÈ¡µÃµÄ¼ÛÖµ 
+				if(berth[j].num==0) continue;
 				int othervalue = min(berth[j].value*leftcapacity/berth[j].num,berth[j].value);
-				//è¿™é‡Œçš„å…¬å¼æ˜¯ç”±é™¤æ³•å˜çš„
-				//å¦‚æœå½“å‰èˆ¹çš„ä»·å€¼æ¯”ä¸Šå½“å‰ç‚¹pos0è¿”å›è™šæ‹Ÿç‚¹çš„æ—¶é—´å°äºç­‰äºåˆ°jç‚¹çš„ä»·å€¼æ¯”é¢å¤–æ—¶é—´
-				//é‚£ä¹ˆé€‰æ‹©è¯¥berth 
+				//ÕâÀïµÄ¹«Ê½ÊÇÓÉ³ı·¨±äµÄ
+				//Èç¹ûµ±Ç°´¬µÄ¼ÛÖµ±ÈÉÏµ±Ç°µãpos0·µ»ØĞéÄâµãµÄÊ±¼äĞ¡ÓÚµÈÓÚµ½jµãµÄ¼ÛÖµ±È¶îÍâÊ±¼ä
+				//ÄÇÃ´Ñ¡Ôñ¸Ãberth 
 				if(2*othervalue*berth[pos0].time>=boat[i].value*(500+berth[j].time-berth[pos0].time)){
-					Cmd.PushCommand(3,i,berth[j].id);//3æ˜¯shipæŒ‡ä»¤,ç¬¬ä¸€ä¸ªå‚æ•°æ˜¯èˆ¹çš„id,ç¬¬äºŒä¸ªæ˜¯æ³Šä½çš„ï¼Œè¡¨ç¤ºå‘ç€æ³Šä½è¿›è¡Œ
+					Cmd.PushCommand(3,i,berth[j].id);//3ÊÇshipÖ¸Áî,µÚÒ»¸ö²ÎÊıÊÇ´¬µÄid,µÚ¶ş¸öÊÇ²´Î»µÄ£¬±íÊ¾Ïò×Å²´Î»½øĞĞ
 					berth[j].is_choose=true;
+					boat[i].location=-2;
 					berth[pos0].is_choose=false;
 					break;
 				}
 			}
-			//å¦‚æœåˆ°å…¶ä»–ç‚¹ä¸çŸ¥å¾—ï¼Œé‚£ä¹ˆç›´æ¥è¿”å›è™šæ‹Ÿç‚¹ 
+			//Èç¹ûµ½ÆäËûµã²»ÖªµÃ£¬ÄÇÃ´Ö±½Ó·µ»ØĞéÄâµã 
 			if(berth[pos0].is_choose){
-				Cmd.PushCommand(4,i);//4æ˜¯goæŒ‡ä»¤ï¼Œç¬¬ä¸€ä¸ªå‚æ•°æ˜¯èˆ¹çš„idï¼Œè¡¨ç¤ºå›è™šæ‹Ÿç‚¹
+				Cmd.PushCommand(4,i);//4ÊÇgoÖ¸Áî£¬µÚÒ»¸ö²ÎÊıÊÇ´¬µÄid£¬±íÊ¾»ØĞéÄâµã
 				berth[pos0].is_choose=false;
+				boat[i].location=-2;
 			}
 		} 
 	}
 }
+

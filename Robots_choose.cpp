@@ -166,10 +166,18 @@ void go_berth(int id){
 void work()
 {
     cur_frame.init();
-	for(int i=0;i<10;i++){
+    
+	for(int i=0;i<2;i++){
+
 		if(robot[i].status==0||robot[i].status==5){//空闲或者到达泊位时寻找货物 
 			go_work(i);
 		}
+        if(robot[i].status==2&&robot[i].target_hw->life<=0)
+            {   robot[i].target_hw=nullptr;
+                go_work(i);
+                while(!robot[i].MoveQueue.empty())
+                robot[i].MoveQueue.pop();
+            }
 		else if(robot[i].status==3){//到达货物时寻找船舶 
 			go_berth(i);
 		}
