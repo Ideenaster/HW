@@ -1,6 +1,7 @@
 #ifndef ASATR_CPP
 #define ASATR_CPP
 
+#pragma GCC optimize(3,"Ofast","inline")
 #include "DataStructure.h" //引用全局数据结构头文件
 #include <cstring>
 extern char Map[200][200];     // 引用全局地图数组

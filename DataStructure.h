@@ -91,7 +91,7 @@ struct hw_frame {
 struct Robot
 { int x, y;
     int goods = 0;            //goods表示机器人是否携带货物
-    int status = 0;           //0:空闲 1:寻货物路中 2：已分配 3：已经到达货物目标位置 4:寻找泊位路中 5:到达泊位
+    int status = 0;           //0:空闲 1:寻货物路中 2：需要寻找货物 3：已经到达货物目标位置 4:寻找泊位路中 5:到达泊位 6:需要寻找泊位
     int Tx = 0, Ty = 0;           //目标坐标
     int current_target_x = 0;   //当前目标点x坐标
     int current_target_y = 0;   //当前目标点y坐标
@@ -112,7 +112,7 @@ struct Robot
     void Point2Move(std::vector<Point*> path)//调用例： robot[Path_x.id].Point2Move(Path_x)
     {
         if(path.size()==0)return;
-        for(unsigned i = 1; i < path.size() - 1; i++)//path[0]的Point* 为起点
+        for(unsigned i = 1; i < path.size(); i++)//path[0]的Point* 为起点
         {
             if(path[i]->x == path[i-1]->x)
             {
@@ -243,7 +243,7 @@ struct RobotAvoidance
         {
             for (int j = i + 1; j < 10; j++)
             {
-                if(robot[i].x + robot[i].xmove()&& robot[i].y + robot[i].ymove() == robot[j].y)
+                if(robot[i].x + robot[i].xmove() == robot[j].x&& robot[i].y + robot[i].ymove() == robot[j].y)
                 {
                     //检测互换式碰撞
                     conflict.push_back(i);
@@ -278,7 +278,7 @@ struct RobotAvoidance
         int x = robot[robotid].x + robot[robotid].Move2x(move);
         int y = robot[robotid].y + robot[robotid].Move2y(move);
         //首先检测是否是障碍物或者超出地图边界
-        if(Map[x][y] == '#' || x < 0 || x >= 200 || y < 0 || y >= 200){
+        if(Map[x][y] == '#' ||Map[x][y] == '*'|| x < 0 || x >= 200 || y < 0 || y >= 200){
             return false;
         }
         int mark[10];
@@ -344,7 +344,7 @@ struct RobotAvoidance
                     }
                     robot[conflict[i]].MoveQueue.push(move);
                     //这里激进一点，由于免费A_star，所以这里可以直接用A_star来重新计算路径
-                    Point* start = new Point(robot[conflict[i]].x,robot[conflict[i]].y);
+                    Point* start = new Point(robot[conflict[i]].x+robot[conflict[i]].xmove(),robot[conflict[i]].y+robot[conflict[i]].ymove());
                     Point* target = new Point(robot[conflict[i]].Tx,robot[conflict[i]].Ty);
                     std::vector<Point* > NewPath = aStar(start,target,conflict[i]);
                     robot[conflict[i]].Point2Move(NewPath);

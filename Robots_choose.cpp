@@ -165,6 +165,7 @@ void go_berth(int id){
 } */
 void work()
 {
+    cur_frame.init();
 	for(int i=0;i<10;i++){
 		if(robot[i].status==0||robot[i].status==5){//空闲或者到达泊位时寻找货物 
 			go_work(i);

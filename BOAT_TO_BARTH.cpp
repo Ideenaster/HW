@@ -20,7 +20,7 @@ inline bool berth_cmp(Berth x,Berth y){//f=价值+货物数量+时间
 }
  
 const int FAST_BOAT=4;
-const int MAXZHEN=15000;//最后的时间 
+const int MAXZHEN=14999;//最后的时间 
 //船选择泊位 
 inline void boat_to_berth(){
 	sort(berth,berth+10,berth_cmp);//修改了此处的berth_cmp函数
@@ -44,7 +44,7 @@ inline void boat_to_berth(){
 					break;
 				}
 			}
-			int zhen=0;
+			int zhen=cur_frame.frame_id;
 			if(zhen+berth[pos0].time==MAXZHEN){//当前帧恰好可以返回虚拟点,直接返回 
 			    berth[pos0].is_choose=false;
 				Cmd.PushCommand(4,i);//4是go指令，第一个参数是船的id，表示回虚拟点 
@@ -120,7 +120,7 @@ inline void boat_to_berth(){
 					break;
 				}
 			}
-			int zhen=0;
+			int zhen=cur_frame.frame_id;
 			if(zhen+berth[pos0].time==MAXZHEN){//当前帧恰好可以返回虚拟点,直接返回 
 			    berth[pos0].is_choose=false;
 				Cmd.PushCommand(4,i);//4是go指令，第一个参数是船的id，表示回虚拟点 

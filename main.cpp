@@ -63,7 +63,7 @@ int main()
         int frameid = Input();//读入完成
         cur_frame.frame_id = frameid;
         work();
-        for(int i = 0; i<10; i++){
+        for(int i = 0; i < 1; i++){
             if(robot[i].status == 2){//判定当前机器人需要寻路
                 Point* start = new Point(robot[i].x,robot[i].y);
                 Point* target = new Point(robot[i].Tx,robot[i].Ty);
@@ -76,19 +76,19 @@ int main()
                 Point* target = new Point(robot[i].Tx,robot[i].Ty);
                 auto NewPath = aStar(start,target,i);
                 robot[i].Point2Move(NewPath);
-                robot[i].status=5;//寻找完毕，正在船舶路上
+                robot[i].status=4;//寻找完毕，正在船舶路上
             }
         }
         avoid.check_conflict();
         if(!avoid.conflict.empty()){
             avoid.rewriteMoveQueue();
         }
-        for(int i = 0; i<10;i++){
+        for(int i = 0; i < 1;i++){
             if(!robot[i].MoveQueue.empty()){
                 Cmd.PushCommand(0,i,robot[i].MovePop());
             }//机器人的Move写入完毕
         }
-        for(int i = 0; i < 10 ;i++){
+        for(int i = 0; i < 1 ;i++){
             if(robot[i].status == 1){
                 if(robot[i].x+robot[i].xmove() == robot[i].Tx && robot[i].y+robot[i].ymove() == robot[i].Ty){
                 Cmd.PushCommand(1,i);
