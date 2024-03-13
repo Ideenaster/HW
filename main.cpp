@@ -68,6 +68,10 @@ int main()
                 Point* start = new Point(robot[i].x,robot[i].y);
                 Point* target = new Point(robot[i].Tx,robot[i].Ty);
                 auto NewPath = aStar(start,target,i);
+                if(NewPath.empty()){//如果找不到路径
+                    robot[i].status=0;
+                    continue;
+                }
                 robot[i].Point2Move(NewPath);
                 robot[i].status=1;//寻找完毕，正在货物路上
             }
@@ -75,6 +79,10 @@ int main()
                 Point* start = new Point(robot[i].x,robot[i].y);
                 Point* target = new Point(robot[i].Tx,robot[i].Ty);
                 auto NewPath = aStar(start,target,i);
+                if(NewPath.empty()){//如果找不到路径
+                    robot[i].status=0;
+                    continue;
+                }
                 robot[i].Point2Move(NewPath);
                 robot[i].status=4;//寻找完毕，正在船舶路上
             }

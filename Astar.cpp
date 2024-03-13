@@ -39,6 +39,35 @@ std::vector<Point *> reconstructPath(Point *current)
 }
 
 /*
+ * @brief: 处理跳点逻辑
+ */
+bool JumpPoint(int newx,int newy,Point* current){
+    //首先检测有没有父节点
+    if(current->parent==nullptr){
+        return true;
+    }
+    //拒绝返回到父节点
+    if(current->parent->x==newx&&current->parent->y==newy){
+        return false;
+    }
+    //判断强制邻居
+    //首先计算偏移向量
+    int dx=newx-current->x;
+    int dy=newy-current->y;
+    //计算障碍坐标
+    int obsx=current->parent->x+dx;
+    int obsy=current->parent->y+dy;
+    if(obsx==current->x&&obsy==current->y){
+        return true;//与父方向相同则通过
+    }
+    if(Map[obsx][obsy]!='#'&&Map[obsx][obsy]!='*'){
+        return false;
+    }
+    return true;
+}
+
+
+/*
  * @brief: A*算法函数主体
  */
 std::vector<Point*> aStar(Point *start, Point *target, int robotid)
@@ -61,15 +90,6 @@ std::vector<Point*> aStar(Point *start, Point *target, int robotid)
         if (isTargetPoint(current->x, current->y, target))
         {
             return reconstructPath(current);
-            // if (!path.empty())
-            // {
-            //     std::cout << "Path found:" << std::endl;
-            //     for (Point *cell : path)
-            //     {
-            //         std::cout << "(" << cell->x << ", " << cell->y << ")" << std::endl;
-            //     }
-            // }
-            // return path;
         }
         visited[current->x][current->y] = true;
         for (int i = 0; i < 4; i++)
