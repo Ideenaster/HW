@@ -267,7 +267,9 @@ struct RobotAvoidance
         int weight[10];
         for (auto i : conflict)
         {
-            weight[i] = abs(robot[i].x - robot[i].Tx) + abs(robot[i].y - robot[i].Ty) * w1 + robot[i].goods * w2;
+            if(robot[i].target_hw!=nullptr)
+            weight[i] = abs(robot[i].x - robot[i].Tx) + abs(robot[i].y - robot[i].Ty) * w1 + robot[i].target_hw->value * w2;
+            else weight[i] = abs(robot[i].x - robot[i].Tx) + abs(robot[i].y - robot[i].Ty) * w1;
         }
         // 对冲突机器人列表进行排序
         std::sort(conflict.begin(), conflict.end(), [&](int a, int b)

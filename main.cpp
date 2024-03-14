@@ -67,7 +67,7 @@ int have_run=0;
 int main()
 {
     //调试选项
-    //freopen("./DBG/DBG.txt","r",stdin);
+    freopen("./DBG/DBG.txt","r",stdin);
     Init();
     pre_berth(berth);
     while(true){
@@ -132,6 +132,7 @@ int main()
         //下面开始泊位指令
         boat_to_berth();
         Cmd.PopCommand();
+        printf("cur_idL: %d\n",cur_frame.frame_id);
 
     }
 

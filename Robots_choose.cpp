@@ -169,7 +169,7 @@ void work()
     
 	for(int i=0;i<10;i++){
 
-		if(robot[i].status==0||robot[i].status==5){//空闲或者到达泊位时寻找货物 
+		if((robot[i].status==0&&robot[i].goods == 0)||robot[i].status==5){//空闲或者到达泊位时寻找货物 
 			go_work(i);
 		}
         if(robot[i].status==2&&robot[i].target_hw->life<=0)
@@ -178,7 +178,7 @@ void work()
                 while(!robot[i].MoveQueue.empty())
                 robot[i].MoveQueue.pop();
             }
-		else if(robot[i].status==3){//到达货物时寻找船舶 
+		else if(robot[i].status==3||(robot[i].goods ==1&&robot[i].status ==0)){//到达货物时寻找船舶 
 			go_berth(i);
 		}
 	} 
