@@ -27,7 +27,7 @@ bool isTargetPoint(int x, int y, Point *target)
 /*
  * @brief: 重构解路径
  */
-std::vector<Point *> reconstructPath(Point *current)
+std::vector<Point *> reconstructPath(Point *current,int flag = 1)
 { // 重构解路径
     std::vector<Point *> path;
     while (current != nullptr)
@@ -35,7 +35,7 @@ std::vector<Point *> reconstructPath(Point *current)
         path.push_back(current);
         current = current->parent;
     }
-    reverse(path.begin(), path.end());
+    if(!flag)reverse(path.begin(), path.end());
     return path;
 }
 /*
@@ -103,7 +103,7 @@ std::vector<Point*> aStar(Point *start, Point *target,int _id)
     // No path found
     return {};
 }
-std::vector<Point*> aStar_berth(Point *start, Point *target,int robotid)
+std::vector<Point*> aStar_berth(Point *start, Point *target,int robotid,int flag = 1)
 {
     int berth_id = 0;
     for(int i = 0; i < 10 ;i++){
@@ -140,7 +140,7 @@ std::vector<Point*> aStar_berth(Point *start, Point *target,int robotid)
 
         if (isTargetPoint(current->x, current->y, target))
         {
-            return reconstructPath(current);
+            return reconstructPath(current, 0);
         }
 
         visited[current->x][current->y] = true;

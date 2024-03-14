@@ -11,7 +11,7 @@
 #include <functional>
 #include <fstream>
 #include <iostream>
-
+#include <set>
 
 //常量定义区
 const int n = 200;       // 地图大小
@@ -425,6 +425,7 @@ struct Commander {
 };
 
 //全局变量定义区---------------------------------------------------------------------------------------------------------
+std::set<std::pair<int,int>> berth_set;
 int money, capacity, id;
 char Map[200][200];         //创建全局地图数组
 Robot robot[robot_num];     //创建全局机器人数组
