@@ -74,7 +74,7 @@ int have_run = 0;
 int main()
 {
     // 调试选项
-    freopen("./DBG/DBG.txt", "r", stdin);
+    //freopen("./DBG/DBG.txt", "r", stdin);
     Init();
     pre_berth(berth);
     while (true)
@@ -90,7 +90,7 @@ int main()
                 Point *target = new Point(robot[i].Tx, robot[i].Ty);
                 if (berth_set.count({robot[i].x, robot[i].y}))
                 {
-                    auto NewPath = aStar_berth(target, start, i, 0);
+                    auto NewPath = aStar_berth(target, start, i, 0);//flag为零不需要reverse
                     if (NewPath.empty())
                     { // 如果找不到路径
                         robot[i].status = 0;
