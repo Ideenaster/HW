@@ -13,7 +13,7 @@ void Init()
         scanf("%d", &id);
         berth[i].id = id;
         scanf("%d%d%d%d", &berth[id].x, &berth[id].y, &berth[id].transport_time, &berth[id].loading_speed);
-        berth_set.insert({berth[id].x, berth[id].y});
+        berth_set.insert(std::make_pair(berth[id].x, berth[id].y));
         berth[id].time = berth[id].transport_time;
         berth[id].num = 0;
         berth[id].value = 0;
@@ -86,7 +86,7 @@ int main()
             { // 判定当前机器人需要寻路
                 Point *start = new Point(robot[i].x, robot[i].y);
                 Point *target = new Point(robot[i].Tx, robot[i].Ty);
-                if (berth_set.count({robot[i].x, robot[i].y}))
+                if (berth_set.count(std::make_pair(robot[i].x, robot[i].y)))
                 {
                     auto NewPath = aStar_berth(target, start, i, 0);//flag为零不需要reverse
                     if (NewPath.empty())
@@ -97,6 +97,7 @@ int main()
                     robot[i].Point2Move(NewPath);
                     robot[i].status = 1; // 寻找完毕，正在货物路上
                 }
+                else
                 {
                     auto NewPath = aStar(start, target, i);
                     if (NewPath.empty())
