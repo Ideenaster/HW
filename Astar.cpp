@@ -35,7 +35,7 @@ std::vector<Point *> reconstructPath(Point *current, int flag = 1)
         path.push_back(current);
         current = current->parent;
     }
-    if (flag)reverse(path.begin(), path.end());
+    if(flag)reverse(path.begin(), path.end());
     return path;
 }
 /*
@@ -112,8 +112,12 @@ std::vector<Point *> aStar_berth(Point *start, Point *target, int robotid, int f
     int berth_id = 0;
     for (int i = 0; i < 10; i++)
     {
-        if (berth[i].x == robot[robotid].Tx && berth[i].y == robot[robotid].Ty)
+        if (berth[i].x == robot[robotid].Tx && berth[i].y == robot[robotid].Ty&&flag == 1)
         {
+            berth_id = i;
+            break;
+        }
+        if(berth[i].x == robot[robotid].x && berth[i].y == robot[robotid].y &&flag == 0){
             berth_id = i;
             break;
         }
@@ -125,7 +129,8 @@ std::vector<Point *> aStar_berth(Point *start, Point *target, int robotid, int f
     int dc[] = {0, 0, -1, 1};
     start->f = berth_dist[berth_id][start->x][start->y];
     Point* current =nullptr,*neighbor = start;
-    while (true)
+    int cnt = 4000;
+    while (cnt--)
     {
         current = neighbor;
         if (isTargetPoint(current->x, current->y, target))

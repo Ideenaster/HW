@@ -69,8 +69,6 @@ int Input()
     scanf("%s", okk);
     return id;
 }
-int restirct = 1;
-int have_run = 0;
 int main()
 {
     // 调试选项
@@ -99,7 +97,6 @@ int main()
                     robot[i].Point2Move(NewPath);
                     robot[i].status = 1; // 寻找完毕，正在货物路上
                 }
-                else
                 {
                     auto NewPath = aStar(start, target, i);
                     if (NewPath.empty())
@@ -169,7 +166,6 @@ int main()
         // 下面开始泊位指令
         boat_to_berth();
         Cmd.PopCommand();
-        printf("cur_idL: %d\n", cur_frame.frame_id);
     }
 
     return 0;
